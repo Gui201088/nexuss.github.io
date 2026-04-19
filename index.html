@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Clã NEXUS</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Poppins',sans-serif;background:linear-gradient(180deg,#ffe4f1,#f5e6ff)}
+header{background:linear-gradient(135deg,#ff4d9d,#6c63ff);color:white;text-align:center;padding:60px 20px}
+header h1{font-size:56px}
+.btn{display:inline-block;padding:14px 22px;margin:8px;border-radius:10px;text-decoration:none;font-weight:600;transition:.3s}
+.btn-login{background:white;color:#ff2d75}
+.btn-discord{background:#5865F2;color:white}
+.btn:hover{transform:scale(1.05)}
+nav{display:flex;justify-content:center;gap:20px;background:white;padding:15px}
+nav a{cursor:pointer;color:#ff2d75}
+.section{display:none;padding:40px 20px;text-align:center}
+.active{display:block}
+.card{background:white;padding:25px;border-radius:16px;max-width:600px;margin:auto;box-shadow:0 10px 25px rgba(0,0,0,.1)}
+input,textarea,button{width:100%;padding:12px;margin:10px 0;border-radius:10px;border:1px solid #ccc}
+textarea{height:100px}
+button{background:#ff2d75;color:white;border:none;cursor:pointer}
+.members{display:flex;flex-wrap:wrap;justify-content:center;gap:15px}
+.member{background:white;padding:15px;border-radius:12px;width:140px;box-shadow:0 5px 15px rgba(0,0,0,.1)}
+.admin button{background:#6c63ff}
+</style>
+</head>
+<body>
+
+<header>
+<h1>NEXUS</h1>
+<a href="#" class="btn btn-login" onclick="abrirLogin()">Login ADM</a>
+<a href="https://discord.gg/pJtzBQQ4" target="_blank" class="btn btn-discord">Discord</a>
+</header>
+
+<nav>
+<a onclick="trocar('home')">Home</a>
+<a onclick="trocar('membros')">Membros</a>
+<a onclick="trocar('recrutamento')">Recrutamento</a>
+<a onclick="acessoAdmin()">ADM</a>
+</nav>
+
+<div id="home" class="section active"><h2>Bem-vindo ao NEXUS</h2></div>
+
+<div id="membros" class="section">
+<h2>Membros</h2>
+<div class="members" id="listaMembros"></div>
+</div>
+
+<div id="recrutamento" class="section">
+<h2>Recrutamento</h2>
+<div class="card">
+<form onsubmit="enviarForm(event)">
+<input id="nick" placeholder="Nick" required>
+<input id="discord" placeholder="Discord" required>
+<input id="idade" type="number" placeholder="Idade" required>
+<textarea id="motivo" placeholder="Por que quer entrar?"></textarea>
+<textarea id="habilidade" placeholder="No que é bom?"></textarea>
+<textarea id="tempo" placeholder="Tempo de jogo por dia"></textarea>
+<button type="submit">Enviar</button>
+</form>
+</div>
+</div>
+
+<div id="admin" class="section">
+<h2>Painel ADM</h2>
+<div id="listaPendentes"></div>
+</div>
+
+<script>
+function trocar(secao){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById(secao).classList.add('active');}
+
+// LOGIN SIMPLES
+const USER = "subgui";
+const PASS = "nexus123";
+let logado = false;
+
+function abrirLogin(){
+const u = prompt("Usuário:");
+const p = prompt("Senha:");
+
+if(u === USER && p === PASS){
+logado = true;
+alert("Logado 😎");
+}else{
+alert("Errado kkk");
+}
+}
+
+function acessoAdmin(){
+if(!logado){alert("Login primeiro 😡"); return;}
+trocar('admin');
+}
+
+const firebaseConfig = {
+apiKey:"COLOCA_AQUI",
+authDomain:"COLOCA_AQUI",
+projectId:"COLOCA_AQUI"
+};
+
+import("https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js").then(({initializeApp})=>{
+import("https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js").then(({getFirestore,collection,addDoc,getDocs,deleteDoc,doc})=>{
+
+const app=initializeApp(firebaseConfig);
+const db=getFirestore(app);
+
+window.enviarForm=async function(e){
+e.preventDefault();
+await addDoc(collection(db,"pendentes"),{
+nick:nick.value,discord:discord.value,idade:idade.value,motivo:motivo.value,habilidade:habilidade.value,tempo:tempo.value
+});
+alert("Enviado 😎");}
+
+async function carregarPendentes(){
+const q=await getDocs(collection(db,"pendentes"));
+const div=document.getElementById('listaPendentes');
+div.innerHTML='';
+
+q.forEach(d=>{
+const m=d.data();
+div.innerHTML+=`
+<div class='card admin'>
+<b>${m.nick}</b><br>
+${m.discord}<br>
+Idade:${m.idade}<br>
+<b>Motivo:</b>${m.motivo}<br>
+<b>Habilidade:</b>${m.habilidade}<br>
+<button onclick="aprovar('${d.id}')">Aprovar</button>
+<button onclick="rejeitar('${d.id}')">Rejeitar</button>
+</div>`;
+});}
+
+window.aprovar=async function(id){
+const q=await getDocs(collection(db,"pendentes"));
+q.forEach(async d=>{
+if(d.id===id){
+await addDoc(collection(db,"membros"),d.data());
+await deleteDoc(doc(db,"pendentes",id));
+}});
+carregarPendentes();carregarMembros();}
+
+window.rejeitar=async function(id){
+await deleteDoc(doc(db,"pendentes",id));
+carregarPendentes();}
+
+async function carregarMembros(){
+const q=await getDocs(collection(db,"membros"));
+const div=document.getElementById('listaMembros');
+div.innerHTML='';
+q.forEach(d=>{
+const m=d.data();
+div.innerHTML+=`<div class='member'>${m.nick}</div>`;
+});}
+
+carregarPendentes();
+carregarMembros();
+
+});});
+</script>
+
+</body>
+</html>
