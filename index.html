@@ -12,147 +12,38 @@
 <body>
 
 <header>
-<h1>NEXUS</h1>
+  <h1>NEXUS</h1>
+  <p class="subtitle">União. Força. Evolução.</p>
 </header>
 
 <nav>
-<a onclick="show('membros')">Membros</a>
-<a onclick="show('conta')">Conta</a>
-<a onclick="loginADM()">ADM</a>
+  <a onclick="show('membros')">Membros</a>
+  <a onclick="show('conta')">Conta</a>
+  <a onclick="loginADM()">ADM</a>
 </nav>
 
 <!-- MEMBROS -->
-<div id="membros" class="section active">
-<div class="members" id="lista"></div>
-</div>
+<section id="membros" class="section active">
+  <div class="members" id="lista"></div>
+</section>
 
 <!-- CONTA -->
-<div id="conta" class="section">
-<div class="card">
-<form onsubmit="registrar(event)">
-<input id="nick" placeholder="Nick" required>
-<input id="codigo" placeholder="Código de acesso">
-<button>Registrar</button>
-</form>
-</div>
-</div>
+<section id="conta" class="section">
+  <div class="card">
+    <h2>Criar Conta</h2>
+    <form onsubmit="registrar(event)">
+      <input id="nick" placeholder="Nick" required>
+      <input id="codigo" placeholder="Código de acesso">
+      <button>Registrar</button>
+    </form>
+  </div>
+</section>
 
 <!-- ADM -->
-<div id="adm" class="section">
-<div id="listaADM"></div>
-</div>
+<section id="adm" class="section">
+  <div id="listaADM"></div>
+</section>
 
-<script>
-const CODIGO = "NEXUS2026";
-const ADM_USER = "subgui";
-const ADM_PASS = "nexus123";
-
-let membros = JSON.parse(localStorage.getItem('membros')) || [];
-
-/* NAVEGAÇÃO */
-function show(id){
-document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-document.getElementById(id).classList.add('active');
-}
-
-/* REGISTRAR */
-function registrar(e){
-e.preventDefault();
-
-if(membros.some(m => m.nick.toLowerCase() === nick.value.toLowerCase())){
-alert("Esse nick já existe!");
-return;
-}
-
-if(codigo.value !== CODIGO){
-alert("Código inválido");
-return;
-}
-
-let novo = {
-nick: nick.value,
-aniversario: "20/05",
-disponivel: "Toda hora",
-pvp: true,
-builder: true,
-farm: true
-};
-
-membros.push(novo);
-localStorage.setItem('membros', JSON.stringify(membros));
-
-render();
-alert("Conta criada!");
-}
-
-/* RENDER MEMBROS */
-function render(){
-let lista = document.getElementById('lista');
-lista.innerHTML = '';
-
-membros.forEach((m,i)=>{
-lista.innerHTML += `
-<div class="member-card">
-
-<div class="member-header">
-<div class="member-name">${m.nick}</div>
-<img class="member-img" src="https://mc-heads.net/avatar/${m.nick}">
-</div>
-
-<div class="member-info">
-<div><b>Aniversário:</b> ${m.aniversario}</div>
-<div><b>Disponível:</b> ${m.disponivel}</div>
-</div>
-
-<div class="member-tags">
-${m.pvp ? '<div class="tag pvp">PVP</div>' : ''}
-${m.builder ? '<div class="tag builder">BUILDER</div>' : ''}
-${m.farm ? '<div class="tag farm">FARM</div>' : ''}
-</div>
-
-</div>
-`;
-});
-}
-
-/* ADM LOGIN */
-function loginADM(){
-let u = prompt("Usuário:");
-let p = prompt("Senha:");
-
-if(u === ADM_USER && p === ADM_PASS){
-show('adm');
-renderADM();
-}else{
-alert("Acesso negado");
-}
-}
-
-/* ADM LISTA */
-function renderADM(){
-let div = document.getElementById('listaADM');
-div.innerHTML = '';
-
-membros.forEach((m,i)=>{
-div.innerHTML += `
-<div class="admin-item">
-${m.nick}
-<button onclick="remover(${i})">Remover</button>
-</div>
-`;
-});
-}
-
-/* REMOVER */
-function remover(i){
-membros.splice(i,1);
-localStorage.setItem('membros', JSON.stringify(membros));
-render();
-renderADM();
-}
-
-render();
-</script>
-
+<script src="script.js"></script>
 </body>
 </html>
