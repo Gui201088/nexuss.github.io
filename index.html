@@ -3,180 +3,155 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NEXUS PRO</title>
-<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;700;900&display=swap" rel="stylesheet">
+<title>NEXUS</title>
 
-<style>
-*{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Nunito',sans-serif;background:#eef3ff}
-header{background:linear-gradient(135deg,#1e3cff,#4da3ff);color:white;text-align:center;padding:80px 20px}
-header h1{font-size:64px;letter-spacing:5px}
-.btn{padding:12px 20px;border-radius:12px;text-decoration:none;font-weight:700;margin:8px;display:inline-block}
-.btn-login{background:white;color:#1e3cff}
-.btn-discord{background:#0a1cff;color:white}
-nav{display:flex;justify-content:center;gap:20px;background:white;padding:15px}
-nav a{cursor:pointer;color:#1e3cff}
-.section{display:none;padding:40px;text-align:center}
-.active{display:block}
-.card{background:white;padding:25px;border-radius:20px;margin:20px auto;max-width:700px}
-.members{display:flex;flex-wrap:wrap;gap:10px;justify-content:center}
-.member{background:white;padding:15px;border-radius:12px;cursor:pointer}
-.rank{font-weight:900;color:#1e3cff}
-</style>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
 </head>
+
 <body>
 
 <header>
 <h1>NEXUS</h1>
-<a href="#" class="btn btn-login" onclick="login()">Login</a>
-<a href="https://discord.gg/pJtzBQQ4" class="btn btn-discord">Discord</a>
 </header>
 
 <nav>
-<a onclick="show('home')">Home</a>
 <a onclick="show('membros')">Membros</a>
-<a onclick="show('ranking')">Ranking</a>
-<a onclick="show('sorteio')">Sorteio</a>
-<a onclick="show('recrutamento')">Recrutamento</a>
-<a onclick="adminAccess()">ADM</a>
+<a onclick="show('conta')">Conta</a>
+<a onclick="loginADM()">ADM</a>
 </nav>
 
-<div id="home" class="section active">
-<h2>NEXUS</h2>
-<p>Clã profissional 😎</p>
-</div>
-
-<div id="membros" class="section">
-<h2>Membros</h2>
+<!-- MEMBROS -->
+<div id="membros" class="section active">
 <div class="members" id="lista"></div>
 </div>
 
-<div id="ranking" class="section">
-<h2>Ranking</h2>
-<div id="rankingLista"></div>
-</div>
-
-<div id="sorteio" class="section">
-<h2>Sorteio</h2>
-<button onclick="participar()">Participar</button>
-<p id="contador"></p>
-<button onclick="sortear()">Sortear</button>
-<p id="ganhador"></p>
-</div>
-
-<div id="recrutamento" class="section">
+<!-- CONTA -->
+<div id="conta" class="section">
 <div class="card">
-<form onsubmit="enviar(event)">
+<form onsubmit="registrar(event)">
 <input id="nick" placeholder="Nick" required>
-<input id="discord" placeholder="Discord" required>
-<textarea id="habilidade" placeholder="Habilidade"></textarea>
-<button>Enviar</button>
+<input id="codigo" placeholder="Código de acesso">
+<button>Registrar</button>
 </form>
 </div>
 </div>
 
-<div id="admin" class="section">
-<h2>ADM</h2>
-<div id="pendentes"></div>
+<!-- ADM -->
+<div id="adm" class="section">
+<div id="listaADM"></div>
 </div>
 
 <script>
-const USER='subgui';
-const PASS='nexus123';
-let logado=false;
+const CODIGO = "NEXUS2026";
+const ADM_USER = "subgui";
+const ADM_PASS = "nexus123";
 
-function login(){
-let u=prompt('user');
-let p=prompt('senha');
-if(u==USER&&p==PASS){logado=true;alert('ok');}
-}
+let membros = JSON.parse(localStorage.getItem('membros')) || [];
 
-function adminAccess(){
-if(!logado){alert('login');return}
-show('admin')
-}
-
+/* NAVEGAÇÃO */
 function show(id){
-document.querySelectorAll('.section').forEach(s=>s.style.display='none');
-document.getElementById(id).style.display='block';
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById(id).classList.add('active');
 }
 
-// SISTEMA LOCAL (pra simplificar)
-let membros=JSON.parse(localStorage.getItem('membros'))||[];
-let pendentes=JSON.parse(localStorage.getItem('pendentes'))||[];
-let sorteio=JSON.parse(localStorage.getItem('sorteio'))||[];
-
-function enviar(e){
+/* REGISTRAR */
+function registrar(e){
 e.preventDefault();
-pendentes.push({nick:nick.value,discord:discord.value,habilidade:habilidade.value,pontos:0,cargo:'Membro'});
-localStorage.setItem('pendentes',JSON.stringify(pendentes));
-alert('enviado');
-renderPendentes();
+
+if(membros.some(m => m.nick.toLowerCase() === nick.value.toLowerCase())){
+alert("Esse nick já existe!");
+return;
 }
 
-function renderPendentes(){
-let div=document.getElementById('pendentes');
-div.innerHTML='';
-pendentes.forEach((p,i)=>{
-div.innerHTML+=`<div class='card'>${p.nick}
-<button onclick="aprovar(${i})">Aprovar</button>
-<button onclick="rejeitar(${i})">Rejeitar</button>
-</div>`;
-});}
+if(codigo.value !== CODIGO){
+alert("Código inválido");
+return;
+}
 
-function aprovar(i){
-membros.push(pendentes[i]);
-pendentes.splice(i,1);
-save();
+let novo = {
+nick: nick.value,
+aniversario: "20/05",
+disponivel: "Toda hora",
+pvp: true,
+builder: true,
+farm: true
+};
+
+membros.push(novo);
+localStorage.setItem('membros', JSON.stringify(membros));
+
 render();
-renderPendentes();
+alert("Conta criada!");
 }
 
-function rejeitar(i){
-pendentes.splice(i,1);
-save();
-renderPendentes();
-}
-
+/* RENDER MEMBROS */
 function render(){
-let div=document.getElementById('lista');
-div.innerHTML='';
+let lista = document.getElementById('lista');
+lista.innerHTML = '';
+
 membros.forEach((m,i)=>{
-div.innerHTML+=`<div class='member' onclick="perfil(${i})">${m.nick} (${m.cargo})</div>`;
+lista.innerHTML += `
+<div class="member-card">
+
+<div class="member-header">
+<div class="member-name">${m.nick}</div>
+<img class="member-img" src="https://mc-heads.net/avatar/${m.nick}">
+</div>
+
+<div class="member-info">
+<div><b>Aniversário:</b> ${m.aniversario}</div>
+<div><b>Disponível:</b> ${m.disponivel}</div>
+</div>
+
+<div class="member-tags">
+${m.pvp ? '<div class="tag pvp">PVP</div>' : ''}
+${m.builder ? '<div class="tag builder">BUILDER</div>' : ''}
+${m.farm ? '<div class="tag farm">FARM</div>' : ''}
+</div>
+
+</div>
+`;
 });
+}
 
-let rank=document.getElementById('rankingLista');
-rank.innerHTML='';
-[...membros].sort((a,b)=>b.pontos-a.pontos).forEach(m=>{
-rank.innerHTML+=`<div class='rank'>${m.nick} - ${m.pontos} pts</div>`;
+/* ADM LOGIN */
+function loginADM(){
+let u = prompt("Usuário:");
+let p = prompt("Senha:");
+
+if(u === ADM_USER && p === ADM_PASS){
+show('adm');
+renderADM();
+}else{
+alert("Acesso negado");
+}
+}
+
+/* ADM LISTA */
+function renderADM(){
+let div = document.getElementById('listaADM');
+div.innerHTML = '';
+
+membros.forEach((m,i)=>{
+div.innerHTML += `
+<div class="admin-item">
+${m.nick}
+<button onclick="remover(${i})">Remover</button>
+</div>
+`;
 });
 }
 
-function perfil(i){
-let m=membros[i];
-alert(`Nick:${m.nick}\nHabilidade:${m.habilidade}`);
-}
-
-function participar(){
-sorteio.push('player'+(sorteio.length+1));
-save();
-document.getElementById('contador').innerText=sorteio.length+' participantes';
-}
-
-function sortear(){
-if(sorteio.length==0)return;
-let g=sorteio[Math.floor(Math.random()*sorteio.length)];
-document.getElementById('ganhador').innerText='Ganhador:'+g;
-}
-
-function save(){
-localStorage.setItem('membros',JSON.stringify(membros));
-localStorage.setItem('pendentes',JSON.stringify(pendentes));
-localStorage.setItem('sorteio',JSON.stringify(sorteio));
+/* REMOVER */
+function remover(i){
+membros.splice(i,1);
+localStorage.setItem('membros', JSON.stringify(membros));
+render();
+renderADM();
 }
 
 render();
-renderPendentes();
 </script>
 
 </body>
