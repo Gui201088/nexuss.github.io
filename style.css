@@ -8,12 +8,19 @@ color:#fff;
 
 /* HERO */
 .hero{
-height:100vh;
+min-height:100vh;
 display:flex;
 flex-direction:column;
 justify-content:center;
 align-items:center;
 text-align:center;
+padding:20px;
+}
+
+/* CONTAINER CENTRAL */
+.hero{
+max-width:900px;
+margin:auto;
 }
 
 .hero h1{
