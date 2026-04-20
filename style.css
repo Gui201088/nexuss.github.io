@@ -3,9 +3,9 @@
 :root{
 --bg1:#0f172a;
 --bg2:#1e3cff;
---card:rgba(255,255,255,0.08);
---border:rgba(255,255,255,0.2);
---text:#fff;
+--card:rgba(255,255,255,0.06);
+--border:rgba(255,255,255,0.15);
+--text:#e5e7eb;
 --accent:#3b82f6;
 }
 
@@ -18,72 +18,75 @@ color:var(--text);
 /* HEADER */
 header{
 text-align:center;
-padding:100px 20px 40px;
+padding:120px 20px 60px;
 }
 
 header h1{
 font-size:72px;
-letter-spacing:8px;
+letter-spacing:6px;
+font-weight:800;
 }
 
 .subtitle{
-opacity:.7;
-margin-top:10px;
+opacity:.6;
+margin-top:8px;
+font-size:14px;
 }
 
-/* MENU */
+/* NAV */
 nav{
 display:flex;
 justify-content:center;
-gap:40px;
-margin-bottom:50px;
+gap:50px;
+margin-bottom:60px;
 }
 
 nav a{
 position:relative;
 cursor:pointer;
-font-weight:600;
+font-weight:500;
+opacity:.7;
+transition:.3s;
 }
 
-/* LINHA ANIMADA */
+nav a:hover{
+opacity:1;
+}
+
+/* LINHA BONITA (SEM BUG) */
 nav a::after{
 content:"";
 position:absolute;
+left:0;
 bottom:-6px;
-left:-100%;
-width:100%;
+width:0%;
 height:2px;
-background:linear-gradient(90deg,transparent,white,transparent);
-opacity:0;
-}
-
-@keyframes linha{
-0%{left:-100%;opacity:1}
-100%{left:100%;opacity:1}
+background:#fff;
+transition:.35s ease;
 }
 
 nav a:hover::after{
-animation:linha 1.2s linear infinite;
+width:100%;
 }
 
-/* SECTIONS */
+/* SECTION */
 .section{
 display:none;
 padding:40px;
-animation:fade .5s ease;
+animation:fade .4s ease;
 }
 
 .active{display:block}
 
 @keyframes fade{
-from{opacity:0;transform:translateY(20px)}
+from{opacity:0;transform:translateY(10px)}
 to{opacity:1}
 }
 
-/* CARD */
+/* CARD BASE */
 .card{
 background:var(--card);
-backdrop-filter:blur(15px);
+backdrop-filter:blur(12px);
 border-radius:20px;
 padding:25px;
 max-width:400px;
@@ -91,29 +94,58 @@ margin:auto;
 border:1px solid var(--border);
 }
 
-/* MEMBERS */
+/* INPUT */
+input,textarea{
+width:100%;
+padding:12px;
+margin:8px 0;
+border-radius:10px;
+border:none;
+outline:none;
+background:rgba(255,255,255,0.08);
+color:#fff;
+}
+
+button{
+width:100%;
+padding:12px;
+margin-top:10px;
+border-radius:10px;
+border:none;
+background:var(--accent);
+color:#fff;
+cursor:pointer;
+transition:.3s;
+}
+
+button:hover{
+transform:translateY(-2px);
+}
+
+/* MEMBERS GRID */
 .members{
 display:flex;
 flex-wrap:wrap;
-gap:25px;
+gap:30px;
 justify-content:center;
 }
 
-/* MEMBER CARD */
+/* CARD BONITO DE VERDADE */
 .member-card{
-background:white;
-color:#333;
-border-radius:20px;
-padding:20px;
-width:300px;
-transition:.3s;
-box-shadow:0 10px 25px rgba(0,0,0,0.15);
+background:#ffffff;
+color:#1f2937;
+border-radius:18px;
+padding:18px;
+width:280px;
+transition:.3s ease;
+box-shadow:0 8px 25px rgba(0,0,0,0.15);
 }
 
 .member-card:hover{
-transform:translateY(-8px) scale(1.03);
+transform:translateY(-6px);
 }
 
+/* HEADER */
 .member-header{
 display:flex;
 justify-content:space-between;
@@ -121,34 +153,35 @@ align-items:center;
 }
 
 .member-name{
-font-weight:700;
+font-weight:600;
 color:#ff4fa3;
+font-size:16px;
 }
 
 .member-img{
-width:65px;
-height:65px;
-border-radius:15px;
+width:55px;
+height:55px;
+border-radius:12px;
 }
 
 /* INFO */
 .member-info{
 margin-top:10px;
-font-size:14px;
+font-size:13px;
 color:#555;
 }
 
 /* TAGS */
 .member-tags{
-margin-top:15px;
+margin-top:12px;
 display:flex;
-gap:8px;
+gap:6px;
 }
 
 .tag{
-padding:6px 10px;
+padding:4px 10px;
 border-radius:999px;
-font-size:12px;
+font-size:11px;
 font-weight:600;
 }
 
@@ -156,33 +189,11 @@ font-weight:600;
 .builder{background:#fef3c7;color:#d97706}
 .farm{background:#dcfce7;color:#16a34a}
 
-/* INPUT */
-input,button{
-width:100%;
-padding:12px;
-margin:8px 0;
-border-radius:10px;
-border:none;
-}
-
-button{
-background:var(--accent);
-color:white;
-cursor:pointer;
-transition:.3s;
-}
-
-button:hover{
-transform:scale(1.05);
-}
-
 /* ADM */
 .admin-item{
-background:white;
+background:#fff;
 color:#000;
 padding:10px;
 margin:10px;
 border-radius:10px;
-display:flex;
-justify-content:space-between;
 }
