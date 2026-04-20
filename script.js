@@ -1,104 +1,67 @@
-const CODIGO = "NEXUS2026";
-const ADM_USER = "subgui";
-const ADM_PASS = "nexus123";
+const USER = "subgui";
+const PASS = "nexus123";
 
-let membros = JSON.parse(localStorage.getItem('membros')) || [];
+let recrutamentos = JSON.parse(localStorage.getItem('recrutamentos')) || [];
 
-/* TROCAR ABA */
 function show(id){
-document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-document.getElementById(id).classList.add('active');
+document.querySelectorAll('.section').forEach(s=>s.style.display="none");
+document.getElementById(id).style.display="block";
 }
 
-/* REGISTRAR */
-function registrar(e){
+/* ENVIAR */
+function enviar(e){
 e.preventDefault();
 
-if(membros.some(m => m.nick.toLowerCase() === nick.value.toLowerCase())){
-alert("Nick já existe");
-return;
+recrutamentos.push({
+nick:nick.value,
+motivo:motivo.value,
+skill:skill.value,
+tempo:tempo.value
+});
+
+localStorage.setItem('recrutamentos', JSON.stringify(recrutamentos));
+alert("Enviado!");
 }
 
-if(codigo.value !== CODIGO){
-alert("Código inválido");
-return;
-}
+/* LOGIN */
+function login(e){
+e.preventDefault();
 
-let novo = {
-nick: nick.value,
-aniversario: "20/05",
-disponivel: "Sempre",
-pvp:true,
-builder:true,
-farm:true
-};
-
-membros.push(novo);
-localStorage.setItem('membros', JSON.stringify(membros));
-
+if(user.value === USER && pass.value === PASS){
+show('admin');
 render();
-alert("Conta criada!");
+}else{
+alert("Erro");
+}
 }
 
-/* RENDER */
+/* RENDER ADM */
 function render(){
-let lista = document.getElementById('lista');
-lista.innerHTML='';
+let div = document.getElementById('lista');
+div.innerHTML="";
 
-membros.forEach((m,i)=>{
-lista.innerHTML += `
-<div class="member-card">
-<div class="member-header">
-<div class="member-name">${m.nick}</div>
-<img class="member-img" src="https://mc-heads.net/avatar/${m.nick}">
-</div>
+recrutamentos.forEach((r,i)=>{
+div.innerHTML += `
+<div class="admin-card">
+<b>${r.nick}</b><br>
+${r.motivo}<br>
+${r.skill}<br>
 
-<div class="member-info">
-<div><b>Aniversário:</b> ${m.aniversario}</div>
-<div><b>Disponível:</b> ${m.disponivel}</div>
-</div>
-
-<div class="member-tags">
-${m.pvp ? '<div class="tag pvp">PVP</div>' : ''}
-${m.builder ? '<div class="tag builder">BUILDER</div>' : ''}
-${m.farm ? '<div class="tag farm">FARM</div>' : ''}
-</div>
+<button onclick="aceitar(${i})">Aceitar</button>
+<button onclick="recusar(${i})">Recusar</button>
 </div>
 `;
 });
 }
 
-/* ADM */
-function loginADM(){
-let u = prompt("Usuário:");
-let p = prompt("Senha:");
-
-if(u === ADM_USER && p === ADM_PASS){
-show('adm');
-renderADM();
-}else{
-alert("Negado");
-}
-}
-
-function renderADM(){
-let div = document.getElementById('listaADM');
-div.innerHTML='';
-
-membros.forEach((m,i)=>{
-div.innerHTML += `
-<div class="admin-item">
-${m.nick}
-<button onclick="remover(${i})">Remover</button>
-</div>`;
-});
-}
-
-function remover(i){
-membros.splice(i,1);
-localStorage.setItem('membros', JSON.stringify(membros));
+function aceitar(i){
+recrutamentos.splice(i,1);
+localStorage.setItem('recrutamentos', JSON.stringify(recrutamentos));
 render();
-renderADM();
 }
 
+function recusar(i){
+recrutamentos.splice(i,1);
+localStorage.setItem('recrutamentos', JSON.stringify(recrutamentos));
 render();
+}
